@@ -6,6 +6,7 @@ class SpecimenOutput(BaseModel):
     material:str
     enrolled_at:str
     followup_id:int
+    entry_hours:float
     duration_hours:float
     event_observed:bool
     note:str

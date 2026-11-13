@@ -25,7 +25,7 @@ def export_run(db,rid):
     row=get_run(db,rid)
     if row.status!="completed":raise HTTPException(409,"研究尚未完成")
     if not db.query(MaintenanceNote).filter_by(run_id=rid,status="approved").first():raise HTTPException(403,"维护建议尚未经负责人确认，不能导出")
-    out=io.StringIO();w=csv.writer(out);w.writerow(['cohort','time_hours','at_risk','events','censored','survival','lower','upper','input_hash'])
+    out=io.StringIO();w=csv.writer(out);w.writerow(['cohort','time_hours','at_risk','events','censored','survival','lower','upper','specimens','delayed_entries','max_entry_hours','method','input_hash'])
     for group in row.result['groups']:
-        for p in group['curve']:w.writerow([group['cohort']['code']]+[p[k] for k in ['time','at_risk','events','censored','survival','lower','upper']]+[row.result['input_hash']])
+        for p in group['curve']:w.writerow([group['cohort']['code']]+[p[k] for k in ['time','at_risk','events','censored','survival','lower','upper']]+[group.get('n',0),group.get('delayed',0),group.get('max_entry',0),row.result.get('method_version','km-loglog-logrank-v1'),row.result['input_hash']])
     return out.getvalue()
